@@ -1,0 +1,113 @@
+<div class="dashboard-container">
+  <div class="dashboard-header">
+    <h1>Dashboard</h1>
+    <p>Welcome back, {{ currentUser?.name }}! 
+      <span *ngIf="isAdmin()" class="admin-badge">Admin</span>
+    </p>
+    <button class="refresh-btn" (click)="refreshData()" [disabled]="isLoading">
+      🔄 Refresh
+    </button>
+  </div>
+
+  <div *ngIf="isLoading" class="loading">
+    <div class="spinner"></div>
+    <p>Loading dashboard...</p>
+  </div>
+
+  <div *ngIf="!isLoading" class="dashboard-content">
+    <!-- Statistics Cards -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-icon">📚</div>
+        <div class="stat-content">
+          <h3>{{ statistics.totalBooks }}</h3>
+          <p>Total Books</p>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon">✅</div>
+        <div class="stat-content">
+          <h3>{{ statistics.availableBooks }}</h3>
+          <p>Available Books</p>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon">📖</div>
+        <div class="stat-content">
+          <h3>{{ statistics.issuedBooks }}</h3>
+          <p>Issued Books</p>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon">👥</div>
+        <div class="stat-content">
+          <h3>{{ statistics.totalUsers }}</h3>
+          <p>Total Users</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="dashboard-grid">
+      <!-- Recent Books -->
+      <div class="dashboard-section">
+        <h2>📚 Recent Books</h2>
+        <div class="book-list">
+          <div *ngFor="let book of recentBooks" class="book-item">
+            <div class="book-info">
+              <h4>{{ book.title }}</h4>
+              <p>by {{ book.author }}</p>
+              <span class="book-category">{{ book.category }}</span>
+            </div>
+            <div class="book-quantity">
+              <span class="available">{{ book.availableQuantity }}</span>
+              <span>/</span>
+              <span class="total">{{ book.quantity }}</span>
+            </div>
+          </div>
+        </div>
+        <div *ngIf="recentBooks.length === 0" class="empty-state">
+          <p>No books available</p>
+        </div>
+      </div>
+
+      <!-- User's Issued Books (only for regular users) -->
+      <div *ngIf="!isAdmin()" class="dashboard-section">
+        <h2>📖 My Issued Books</h2>
+        <div class="issued-books-list">
+          <div *ngFor="let issuedBook of userIssuedBooks" class="issued-book-item">
+            <div class="issued-book-info">
+              <h4>{{ getBookTitle(issuedBook.bookId) }}</h4>
+              <p>Issued: {{ formatDate(issuedBook.issueDate) }}</p>
+              <p>Due: {{ formatDate(issuedBook.dueDate) }}</p>
+              <span class="due-status" [class.overdue]="isOverdue(issuedBook.dueDate)">
+                {{ getDueStatus(issuedBook.dueDate) }}
+              </span>
+            </div>
+          </div>
+        </div>
+        <div *ngIf="userIssuedBooks.length === 0" class="empty-state">
+          <p>You haven't issued any books yet</p>
+        </div>
+      </div>
+
+      <!-- Quick Actions for Admin -->
+      <div *ngIf="isAdmin()" class="dashboard-section">
+        <h2>⚡ Quick Actions</h2>
+        <div class="quick-actions">
+          <button class="action-btn" (click)="navigateTo('/book-management')">
+            📝 Add New Book
+          </button>
+          <button class="action-btn" (click)="navigateTo('/book-search')">
+            🔍 Search Books
+          </button>
+          <button class="action-btn" (click)="navigateTo('/book-history')">
+            📊 View All History
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

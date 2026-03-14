@@ -1,0 +1,153 @@
+<div class="book-history-container">
+  <div class="page-header">
+    <h1>📊 Book History</h1>
+    <p *ngIf="!isAdmin()">View your book borrowing history</p>
+    <p *ngIf="isAdmin()">View all book borrowing records</p>
+  </div>
+
+  <!-- Statistics Cards -->
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-icon">📚</div>
+      <div class="stat-content">
+        <h3>{{ getStatistics().total }}</h3>
+        <p>Total Books</p>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-icon">📖</div>
+      <div class="stat-content">
+        <h3>{{ getStatistics().issued }}</h3>
+        <p>Currently Issued</p>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-icon">✅</div>
+      <div class="stat-content">
+        <h3>{{ getStatistics().returned }}</h3>
+        <p>Returned</p>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-icon">⚠️</div>
+      <div class="stat-content">
+        <h3>{{ getStatistics().overdue }}</h3>
+        <p>Overdue</p>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-icon">💰</div>
+      <div class="stat-content">
+        <h3>₹{{ getStatistics().totalFines }}</h3>
+        <p>Total Fines</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Filters -->
+  <div class="filters-section">
+    <div class="filter-card">
+      <h3>Filters</h3>
+      
+      <div class="filter-row">
+        <div class="form-group">
+          <label for="statusFilter">Status</label>
+          <select 
+            id="statusFilter" 
+            name="statusFilter" 
+            [(ngModel)]="statusFilter"
+            class="filter-select"
+          >
+            <option value="all">All Status</option>
+            <option value="issued">Issued</option>
+            <option value="returned">Returned</option>
+            <option value="overdue">Overdue</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="searchTerm">Search</label>
+          <input 
+            type="text" 
+            id="searchTerm" 
+            name="searchTerm" 
+            [(ngModel)]="searchTerm" 
+            placeholder="Search by book title or author..."
+            class="filter-input"
+          />
+        </div>
+
+        <div class="form-group">
+          <label>&nbsp;</label>
+          <div class="filter-actions">
+            <button class="clear-btn" (click)="clearFilters()">Clear Filters</button>
+            <button class="export-btn" (click)="exportHistory()">📥 Export CSV</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- History Table -->
+  <div class="history-section">
+    <div class="section-card">
+      <div class="section-header">
+        <h2>
+          {{ isAdmin() ? 'All Book Records' : 'My Book History' }}
+          ({{ isAdmin() ? filteredAllBooks.length : filteredUserBooks.length }})
+        </h2>
+      </div>
+
+      <div *ngIf="!isAdmin() && filteredUserBooks.length === 0" class="empty-state">
+        <div class="empty-icon">📚</div>
+        <h3>No book history found</h3>
+        <p>You haven't borrowed any books yet.</p>
+      </div>
+
+      <div *ngIf="isAdmin() && filteredAllBooks.length === 0" class="empty-state">
+        <div class="empty-icon">📚</div>
+        <h3>No book records found</h3>
+        <p>No book borrowing records match your filters.</p>
+      </div>
+
+      <div class="history-table" *ngIf="(!isAdmin() && filteredUserBooks.length > 0) || (isAdmin() && filteredAllBooks.length > 0)">
+        <table>
+          <thead>
+            <tr>
+              <th>Book Title</th>
+              <th>Author</th>
+              <th *ngIf="isAdmin()">User</th>
+              <th>Issue Date</th>
+              <th>Due Date</th>
+              <th>Return Date</th>
+              <th>Status</th>
+              <th>Fine</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let book of (isAdmin() ? filteredAllBooks : filteredUserBooks)">
+              <td class="book-title">{{ getBookTitle(book.bookId) }}</td>
+              <td>{{ getBookAuthor(book.bookId) }}</td>
+              <td *ngIf="isAdmin()">{{ getUserName(book.userId) }}</td>
+              <td>{{ formatDate(book.issueDate) }}</td>
+              <td>{{ formatDate(book.dueDate) }}</td>
+              <td>{{ book.returnDate ? formatDate(book.returnDate) : 'Not returned' }}</td>
+              <td>
+                <span class="status-badge" [ngClass]="getStatusClass(book.status)">
+                  {{ getStatusText(book.status) }}
+                </span>
+              </td>
+              <td class="fine-amount">
+                {{ book.fine ? 'Rs' + book.fine : 'Rs0' }}
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>

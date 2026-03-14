@@ -1,0 +1,53 @@
+<div class="admin-login-container">
+  <div class="admin-login-card">
+    <h2>Admin Login</h2>
+    <div class="admin-badge">
+      <i class="admin-icon">🔒</i>
+      <span>Administrator Access</span>
+    </div>
+    <form (ngSubmit)="adminLogin()">
+      <div class="form-group">
+        <label for="email">Admin Email:</label>
+        <input 
+          type="email" 
+          id="email" 
+          name="email" 
+          [(ngModel)]="email" 
+          required 
+          email
+          placeholder="Enter admin email"
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="password">Admin Password:</label>
+        <input 
+          type="password" 
+          id="password" 
+          name="password" 
+          [(ngModel)]="password" 
+          required 
+          placeholder="Enter admin password"
+        />
+      </div>
+
+      <div class="error-message" *ngIf="errorMessage">
+        {{ errorMessage }}
+      </div>
+
+      <button type="submit" class="login-btn" [disabled]="isLoading || !validateAdmin()">
+        <span *ngIf="!isLoading">Admin Login</span>
+        <span *ngIf="isLoading">Authenticating...</span>
+      </button>
+    </form>
+
+    <div class="login-links">
+      <p>Not an admin? <a (click)="goToUserLogin()">User Login</a></p>
+      <div class="demo-credentials">
+        <small>Demo Credentials:</small>
+        <small>Email: admin@library.com</small>
+        <small>Password: admin123</small>
+      </div>
+    </div>
+  </div>
+</div>

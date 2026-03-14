@@ -1,0 +1,120 @@
+<div class="return-book-container">
+  <div class="page-header">
+    <h1>📤 Return Book</h1>
+    <p>Return borrowed books and calculate fines</p>
+  </div>
+
+  <!-- Messages -->
+  <div class="message-container">
+    <div class="error-message" *ngIf="errorMessage">
+      {{ errorMessage }}
+      <button class="close-btn" (click)="clearMessages()">×</button>
+    </div>
+    
+    <div class="success-message" *ngIf="successMessage">
+      {{ successMessage }}
+      <button class="close-btn" (click)="clearMessages()">×</button>
+    </div>
+  </div>
+
+  <div class="return-section">
+    <div class="section-card">
+      <div class="section-header">
+        <h2>My Issued Books ({{ userIssuedBooks.length }})</h2>
+        <button 
+          class="return-all-btn" 
+          (click)="returnAllBooks()"
+          [disabled]="userIssuedBooks.length === 0 || isLoading"
+          *ngIf="userIssuedBooks.length > 1"
+        >
+          📦 Return All
+        </button>
+      </div>
+      
+      <div *ngIf="userIssuedBooks.length === 0" class="empty-state">
+        <div class="empty-icon">📚</div>
+        <h3>No books to return</h3>
+        <p>You haven't issued any books or have already returned all of them.</p>
+      </div>
+
+      <div class="issued-books-grid" *ngIf="userIssuedBooks.length > 0">
+        <div 
+          *ngFor="let issuedBook of userIssuedBooks" 
+          class="issued-book-card"
+        >
+          <div class="book-header">
+            <h3 class="book-title">{{ getBookTitle(issuedBook.bookId) }}</h3>
+            <span 
+              class="due-status" 
+              [class.overdue]="isOverdue(issuedBook.dueDate)"
+            >
+              {{ getDueStatus(issuedBook.dueDate) }}
+            </span>
+          </div>
+
+          <div class="book-details">
+            <div class="detail-row">
+              <span class="label">Author:</span>
+              <span class="value">{{ getBookAuthor(issuedBook.bookId) }}</span>
+            </div>
+            
+            <div class="detail-row">
+              <span class="label">Issue Date:</span>
+              <span class="value">{{ formatDate(issuedBook.issueDate) }}</span>
+            </div>
+            
+            <div class="detail-row">
+              <span class="label">Due Date:</span>
+              <span class="value due-date" [class.overdue]="isOverdue(issuedBook.dueDate)">
+                {{ formatDate(issuedBook.dueDate) }}
+              </span>
+            </div>
+            
+            <div class="detail-row" *ngIf="isOverdue(issuedBook.dueDate)">
+              <span class="label">Fine:</span>
+              <span class="value fine-amount">₹{{ calculateFine(issuedBook) }}</span>
+            </div>
+          </div>
+
+          <div class="book-actions">
+            <button 
+              class="return-btn" 
+              (click)="returnBook(issuedBook.id)"
+              [disabled]="isLoading"
+            >
+              <span *ngIf="!isLoading">📤 Return Book</span>
+              <span *ngIf="isLoading">Processing...</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Fine Information -->
+  <div class="fine-info-card" *ngIf="hasOverdueBooks()">
+    <h3>💰 Fine Information</h3>
+    <div class="fine-details">
+      <p><strong>Fine Rate:</strong> Rs5 per day after due date</p>
+      <p><strong>Calculation:</strong> Days overdue × Rs5 = Total fine</p>
+      <div class="total-fine">
+        <strong>Total Fine for Overdue Books:</strong> 
+        <span class="fine-amount">
+          Rs{{ getTotalFine() }}
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Instructions -->
+  <div class="instructions-card">
+    <h3>📋 Return Instructions</h3>
+    <ul>
+      <li>Click "Return Book" to return individual books</li>
+      <li>Use "Return All" to return all issued books at once</li>
+      <li>Fines are automatically calculated for overdue books</li>
+      <li>Books must be returned in good condition</li>
+      <li>Contact library staff for any issues with returns</li>
+    </ul>
+  </div>
+</div>

@@ -1,0 +1,37 @@
+<nav class="navbar">
+  <div class="navbar-brand">
+    <h2>📚 Library Management</h2>
+  </div>
+  
+  <div class="navbar-menu">
+    <a (click)="navigateTo('/dashboard')" class="nav-link">Dashboard</a>
+    <a (click)="navigateTo('/book-search')" class="nav-link">Search Books</a>
+    <a (click)="navigateTo('/issue-book')" class="nav-link">Issue Book</a>
+    <a (click)="navigateTo('/return-book')" class="nav-link">Return Book</a>
+    <a (click)="navigateTo('/book-history')" class="nav-link">My History</a>
+    <a *ngIf="isAdmin()" (click)="navigateTo('/book-management')" class="nav-link admin-link">Manage Books</a>
+  </div>
+
+  <div class="navbar-user">
+    <div class="user-dropdown" [class.active]="isDropdownOpen">
+      <button class="user-button" (click)="toggleDropdown()">
+        <span class="user-avatar">👤</span>
+        <span class="user-name">{{ currentUser?.name }}</span>
+        <span class="user-role">{{ currentUser?.role === 'admin' ? '(Admin)' : '(User)' }}</span>
+        <span class="dropdown-arrow">▼</span>
+      </button>
+      
+      <div class="dropdown-menu" *ngIf="isDropdownOpen">
+        <div class="dropdown-item user-info">
+          <strong>{{ currentUser?.name }}</strong>
+          <small>{{ currentUser?.email }}</small>
+          <small>{{ currentUser?.studentId }}</small>
+        </div>
+        <div class="dropdown-divider"></div>
+        <button class="dropdown-item logout-btn" (click)="logout()">
+          <span>🚪 Logout</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</nav>
